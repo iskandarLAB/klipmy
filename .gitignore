@@ -1,0 +1,21 @@
+# Python & Virtualenv
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Database & Environment
+db.sqlite3
+db.sqlite3-journal
+.env
+.env.local
+
+# OS & Logs
+.DS_Store
+*.log
+
+# Media & Static
+media/
+staticfiles/

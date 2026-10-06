@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Bayaran Deposit Kempen (CHIP FPX) | KlipMY{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-6">
+
+  <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+    
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 border border-brand-200 flex items-center justify-center mx-auto mb-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+      </div>
+      <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">CHIP FPX Online Banking</span>
+      <h1 class="text-2xl font-black text-slate-900 mt-1">Deposit Bajet Kempen</h1>
+      <p class="text-xs text-slate-500 mt-0.5">Rujukan: <span class="font-mono font-bold">{{ payment.reference }}</span></p>
+    </div>
+
+    <!-- Ringkasan Bil -->
+    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-6 space-y-2 text-xs">
+      <div class="flex justify-between text-slate-600">
+        <span>Kempen:</span>
+        <span class="font-bold text-slate-900 text-right truncate max-w-[200px]">{{ campaign.title }}</span>
+      </div>
+      <div class="flex justify-between text-slate-600">
+        <span>Jenama:</span>
+        <span class="font-bold text-slate-900">{{ campaign.brand_name }}</span>
+      </div>
+      <div class="flex justify-between text-slate-600 pt-2 border-t border-slate-200">
+        <span class="font-bold text-sm text-slate-800">Jumlah Deposit:</span>
+        <span class="font-black text-lg text-emerald-600">RM {{ payment.amount|floatformat:2 }}</span>
+      </div>
+    </div>
+
+    <!-- Pilih Bank -->
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Bank Pembayar (FPX):</label>
+        <div class="space-y-2">
+          <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-brand-500 cursor-pointer bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 transition-all">
+            <input type="radio" name="bank" value="Maybank2u" checked class="text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-bold text-slate-800">Maybank2u (Maybank)</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-brand-500 cursor-pointer bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 transition-all">
+            <input type="radio" name="bank" value="CIMB Clicks" class="text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-bold text-slate-800">CIMB Clicks (CIMB)</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-brand-500 cursor-pointer bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 transition-all">
+            <input type="radio" name="bank" value="Bank Islam" class="text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-bold text-slate-800">Bank Islam</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-brand-500 cursor-pointer bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 transition-all">
+            <input type="radio" name="bank" value="Public Bank" class="text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-bold text-slate-800">Public Bank Online</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-brand-500 cursor-pointer bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 transition-all">
+            <input type="radio" name="bank" value="Touch n Go eWallet" class="text-brand-600 focus:ring-brand-500">
+            <span class="text-xs font-bold text-slate-800">Touch 'n Go eWallet</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-brand-600/30 transition-all">
+        Sahkan Bayaran RM {{ payment.amount|floatformat:2 }} &rarr;
+      </button>
+
+      <p class="text-[10px] text-center text-slate-400">
+        Simulasi sandbox diaktifkan untuk mod demo tempatan. Dalam mod live, pengguna akan terus dialihkan ke portal selamat CHIP Asia.
+      </p>
+    </form>
+
+  </div>
+
+</div>
+{% endblock %}

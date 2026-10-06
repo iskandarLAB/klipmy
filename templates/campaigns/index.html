@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Explore Kempen Video Clipping | KlipMY{% endblock %}
+
+{% block content %}
+<!-- Hero Section (Ringkas & Menarik) -->
+<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 text-white p-6 sm:p-10 shadow-xl mb-10">
+  <div class="relative z-10 max-w-3xl">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-500/30 mb-4">
+      <span>🚀 Platform Clipping Pertama Malaysia</span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+      Potong Video Pendek, <br class="hidden sm:inline"/>Dapat <span class="text-emerald-400">Ringgit Malaysia</span>.
+    </h1>
+    <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed">
+      Dapatkan bayaran bagi setiap <strong>1,000 verified views</strong> di TikTok & Instagram Reels. Muat turun bahan video mentah, edit guna CapCut, dan hantar link anda!
+    </p>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-slate-700/60 max-w-lg">
+      <div>
+        <p class="text-xl sm:text-2xl font-black text-emerald-400">RM {{ total_paid_out|floatformat:2|intcomma }}</p>
+        <p class="text-xs text-slate-400">Jumlah Dibayar</p>
+      </div>
+      <div>
+        <p class="text-xl sm:text-2xl font-black text-white">{{ total_views|intcomma }}</p>
+        <p class="text-xs text-slate-400">Views Terkumpul</p>
+      </div>
+      <div>
+        <p class="text-xl sm:text-2xl font-black text-teal-300">{{ active_campaigns_count }}</p>
+        <p class="text-xs text-slate-400">Kempen Aktif</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative blur background -->
+  <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-500/30 rounded-full blur-3xl pointer-events-none"></div>
+</div>
+
+<!-- 3 Langkah Mudah Panduan -->
+<div class="mb-10 bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+  <h2 class="text-sm font-extrabold text-slate-400 uppercase tracking-wider mb-4">Cara Mudah Buat Duit</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+      <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-extrabold flex items-center justify-center flex-shrink-0">1</div>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm">Pilih Kempen & Muat Turun</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Buka link Google Drive/YouTube video asal yang disediakan oleh brand.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+      <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-extrabold flex items-center justify-center flex-shrink-0">2</div>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm">Edit & Post ke Sosmed</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Potong babak paling best (hook), tambah kapsyen & hashtag wajib.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+      <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-extrabold flex items-center justify-center flex-shrink-0">3</div>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm">Tampal Link & Tarik Duit</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Sistem jejak views automatik. Capai minima RM20 terus tarik ke DuitNow!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Tabs (Platform & Kategori) -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <h2 class="text-xl font-bold text-slate-900">Senarai Kempen Aktif</h2>
+    <p class="text-xs text-slate-500">Pilih kempen yang sesuai dengan gaya akaun anda</p>
+  </div>
+
+  <!-- Platform Filter Buttons -->
+  <div class="flex items-center gap-1.5 bg-slate-200/80 p-1 rounded-xl text-xs font-bold">
+    <a href="?platform=all" class="px-3 py-1.5 rounded-lg transition-all {% if selected_platform == 'all' %}bg-white text-slate-900 shadow-sm{% else %}text-slate-600 hover:text-slate-900{% endif %}">Semua</a>
+    <a href="?platform=tiktok" class="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all {% if selected_platform == 'tiktok' %}bg-white text-slate-900 shadow-sm{% else %}text-slate-600 hover:text-slate-900{% endif %}">
+      <span>TikTok</span>
+    </a>
+    <a href="?platform=reels" class="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all {% if selected_platform == 'reels' %}bg-white text-slate-900 shadow-sm{% else %}text-slate-600 hover:text-slate-900{% endif %}">
+      <span>Reels</span>
+    </a>
+  </div>
+</div>
+
+<!-- Grid Kad Kempen -->
+{% if campaigns %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for c in campaigns %}
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-all duration-200 flex flex-col justify-between group">
+        
+        <!-- Header Kad: Brand & Rate -->
+        <div>
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <div>
+              <span class="text-xs font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md border border-brand-200">
+                {{ c.get_category_display }}
+              </span>
+              <h3 class="text-lg font-bold text-slate-900 mt-2 group-hover:text-brand-600 transition-colors line-clamp-1">
+                {{ c.title }}
+              </h3>
+              <p class="text-xs text-slate-500 font-medium">Oleh {{ c.brand_name }}</p>
+            </div>
+            <!-- Rate Badge -->
+            <div class="text-right flex-shrink-0 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+              <span class="text-xs text-emerald-700 font-bold block">Bayaran</span>
+              <span class="text-sm font-extrabold text-emerald-800">RM {{ c.rate_per_1k_views|floatformat:2 }}</span>
+              <span class="text-[10px] text-emerald-600 block">/ 1,000 views</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600 line-clamp-2 mb-4 leading-relaxed">
+            {{ c.description }}
+          </p>
+
+          <!-- Platform Pill & Max Cap -->
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+              {% if c.target_platforms == 'both' %}
+                <span>TikTok + IG Reels</span>
+              {% elif c.target_platforms == 'tiktok' %}
+                <span>TikTok Sahaja</span>
+              {% else %}
+                <span>IG Reels Sahaja</span>
+              {% endif %}
+            </span>
+            <span class="text-[11px] font-medium text-slate-500">
+              Maks: <strong>RM {{ c.max_payout_per_clip|floatformat:0 }}/video</strong>
+            </span>
+          </div>
+
+          <!-- Progress Bar Bajet -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+            <div class="flex justify-between text-xs font-semibold mb-1.5">
+              <span class="text-slate-600">Baki Bajet:</span>
+              <span class="text-slate-900 font-bold">RM {{ c.budget_remaining|floatformat:2 }} <span class="text-slate-400 font-normal">/ RM {{ c.budget_total|floatformat:0 }}</span></span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: {{ c.progress_percentage }}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kad Footer: Butang Tindakan -->
+        <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+          <a href="{% url 'campaigns:detail' pk=c.id %}" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-brand-600 text-white font-bold text-xs rounded-xl text-center transition-colors shadow-sm">
+            Tengok Arahan & Klip Sekarang &rarr;
+          </a>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8">
+    <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+    </div>
+    <h3 class="text-base font-bold text-slate-800">Tiada Kempen Aktif Ditemui</h3>
+    <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Buat masa ini belum ada kempen yang sepadan dengan tapisan anda. Cuba pilih platform atau kategori lain.</p>
+    {% if is_brand %}
+      <a href="{% url 'campaigns:create' %}" class="inline-block mt-4 px-4 py-2 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md">Lancar Kempen Pertama Anda</a>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

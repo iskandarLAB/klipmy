@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard Brand | KlipMY{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Brand</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Pantau prestasi tontonan video dan pengagihan bajet kempen anda.</p>
+    </div>
+    <div>
+      <a href="{% url 'campaigns:create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-600/20 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span>+ Cipta Kempen Baharu</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">Jumlah Tontonan Sah</p>
+      <p class="text-2xl font-black text-emerald-600 mt-1">{{ total_views|intcomma }}</p>
+      <p class="text-[11px] text-slate-400 mt-1">views TikTok & Reels</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">Jumlah Klip Dihasilkan</p>
+      <p class="text-2xl font-black text-slate-900 mt-1">{{ total_clips }}</p>
+      <p class="text-[11px] text-slate-400 mt-1">video oleh pelbagai clipper</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">Bajet Terpakai</p>
+      <p class="text-2xl font-black text-slate-900 mt-1">RM {{ total_spent|floatformat:2 }}</p>
+      <p class="text-[11px] text-slate-400 mt-1">daripada RM {{ total_budget|floatformat:2 }}</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">Kempen Aktif</p>
+      <p class="text-2xl font-black text-brand-600 mt-1">{{ campaigns.count }}</p>
+      <p class="text-[11px] text-slate-400 mt-1">kempen didaftarkan</p>
+    </div>
+  </div>
+
+  <!-- Senarai Kempen Saya -->
+  <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+    <h2 class="text-base font-bold text-slate-900 mb-4">Senarai Kempen Anda</h2>
+
+    {% if campaigns %}
+      <div class="divide-y divide-slate-100">
+        {% for c in campaigns %}
+          <div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            <div class="space-y-1.5 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full
+                  {% if c.status == 'active' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+                  {% elif c.status == 'pending_payment' %}bg-amber-50 text-amber-700 border border-amber-200
+                  {% elif c.status == 'paused' %}bg-slate-100 text-slate-600
+                  {% else %}bg-purple-50 text-purple-700{% endif %}">
+                  {{ c.get_status_display }}
+                </span>
+                <span class="text-xs text-slate-400">{{ c.get_category_display }}</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">
+                <a href="{% url 'campaigns:detail' pk=c.id %}" class="hover:text-brand-600 transition-colors">{{ c.title }}</a>
+              </h3>
+              <p class="text-xs text-slate-500">
+                Kadar: <strong>RM {{ c.rate_per_1k_views }}/1k</strong> &bull; {{ c.submissions.count }} klip &bull; {{ c.total_views_generated|intcomma }} views
+              </p>
+            </div>
+
+            <!-- Progress Bajet -->
+            <div class="w-full md:w-48 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                <span>Terpakai:</span>
+                <span>RM {{ c.budget_spent|floatformat:0 }} / RM {{ c.budget_total|floatformat:0 }}</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                <div class="bg-brand-500 h-2 rounded-full" style="width: {{ c.progress_percentage }}%"></div>
+              </div>
+            </div>
+
+            <!-- Butang Tindakan -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              {% if c.status == 'pending_payment' %}
+                <a href="{% url 'payments:checkout' campaign_id=c.id %}" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm">
+                  Bayar Deposit (FPX)
+                </a>
+              {% else %}
+                <a href="{% url 'campaigns:toggle_status' pk=c.id %}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl">
+                  {% if c.status == 'active' %}Jeda{% else %}Aktifkan{% endif %}
+                </a>
+              {% endif %}
+              <a href="{% url 'campaigns:detail' pk=c.id %}" class="px-3 py-2 bg-slate-900 hover:bg-brand-600 text-white font-bold text-xs rounded-xl">
+                Lihat Klip &rarr;
+              </a>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 text-slate-400">
+        <p class="text-sm">Anda belum melancarkan sebarang kempen.</p>
+        <a href="{% url 'campaigns:create' %}" class="inline-block mt-3 px-4 py-2 bg-brand-600 text-white font-bold text-xs rounded-xl">
+          Lancar Kempen Pertama
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}
